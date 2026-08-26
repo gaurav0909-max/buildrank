@@ -96,6 +96,17 @@ export default async function ProductPage({ params }: Params) {
           Overtake for {formatMoney(priceToBeat)}
         </Link>
       </div>
+
+      <a
+        href={`mailto:${
+          process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "hello@buildrank.lol"
+        }?subject=${encodeURIComponent(`Report listing: ${product.name}`)}&body=${encodeURIComponent(
+          `Reporting this listing:\n\nName: ${product.name}\nLink: ${product.url}\nListing page: ${product.id}\n\nReason:\n`
+        )}`}
+        className="mt-6 inline-block text-xs text-foreground-faint hover:text-foreground-dim"
+      >
+        Report this listing
+      </a>
     </div>
   );
 }

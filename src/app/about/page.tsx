@@ -29,6 +29,10 @@ const faqs = [
     a: "Email us from the address you submitted with and we'll take it down. Bids already placed are not refunded.",
   },
   {
+    q: "What's not allowed on BuildRank?",
+    a: "BuildRank never hosts any content — a listing is just a name, tagline, category, and a link you control. Links to illegal goods or services, adult content, malware or phishing, counterfeit goods, weapons, regulated substances, or hate speech are not allowed. Report a listing from its page and we remove violations immediately.",
+  },
+  {
     q: "Why would I pay to rank higher?",
     a: "Distribution. #1 gets seen by every builder and founder who visits the board — the same audience that would otherwise cost you real money to reach through ads.",
   },
