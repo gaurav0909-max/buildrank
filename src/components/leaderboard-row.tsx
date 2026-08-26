@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { categoryLabel, formatUsd } from "@/lib/categories";
+import { categoryLabel, formatMoney } from "@/lib/categories";
 
 export type LeaderboardProduct = {
   id: string;
@@ -79,13 +79,13 @@ export default function LeaderboardRow({
 
         <div className="shrink-0 text-right">
           <div className="font-mono tabular-nums text-base font-medium text-foreground sm:text-lg">
-            {formatUsd(product.totalPaid)}
+            {formatMoney(product.totalPaid)}
           </div>
           <Link
             href={`/submit?outbid=${product.id}&min=${priceToBeat}`}
             className="mt-0.5 inline-block text-xs font-semibold text-accent hover:text-accent-strong"
           >
-            Outbid for {formatUsd(priceToBeat)}+
+            Outbid for {formatMoney(priceToBeat)}+
           </Link>
         </div>
       </div>

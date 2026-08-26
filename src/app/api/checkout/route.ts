@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { randomUUID } from "node:crypto";
 import { prisma } from "@/lib/prisma";
-import { getStripe } from "@/lib/stripe";
+import { getRazorpay } from "@/lib/razorpay";
+import { getUsdToInrRate, usdCentsToInrPaise } from "@/lib/fx";
 import { CATEGORIES } from "@/lib/categories";
 
 const MIN_BID_CENTS = 500;
@@ -55,7 +56,7 @@ export async function POST(req: NextRequest) {
   const origin = req.nextUrl.origin;
 
   try {
-    const stripe = getStripe();
+    const razorpay = getRazorpay();
 
     if (b.mode === "outbid") {
       if (typeof b.productId !== "string") {
@@ -80,34 +81,26 @@ export async function POST(req: NextRequest) {
         data: { productId: product.id, amount, status: "pending" },
       });
 
-      const session = await stripe.checkout.sessions.create({
-        mode: "payment",
-        payment_method_types: ["card"],
-        customer_email: ownerEmail,
-        line_items: [
-          {
-            quantity: 1,
-            price_data: {
-              currency: "usd",
-              unit_amount: amount,
-              product_data: {
-                name: `Outbid on BuildRank — ${product.name}`,
-                description: `Move ${product.name} to the top of the BuildRank leaderboard.`,
-              },
-            },
-          },
-        ],
-        metadata: { bidId: bid.id, productId: product.id },
-        success_url: `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${origin}/submit?outbid=${product.id}&min=${minAmount}`,
+      const fxRate = await getUsdToInrRate();
+      const inrPaise = usdCentsToInrPaise(amount, fxRate);
+
+      const paymentLink = await razorpay.paymentLink.create({
+        amount: inrPaise,
+        currency: "INR",
+        description: `Move ${product.name} to the top of the BuildRank leaderboard — $${(amount / 100).toFixed(2)}.`,
+        customer: { email: ownerEmail },
+        notify: { sms: false, email: false },
+        notes: { bidId: bid.id, productId: product.id, usdCents: amount, fxRate },
+        callback_url: `${origin}/checkout/success`,
+        callback_method: "get",
       });
 
       await prisma.bid.update({
         where: { id: bid.id },
-        data: { stripeSessionId: session.id },
+        data: { razorpayPaymentLinkId: paymentLink.id },
       });
 
-      return NextResponse.json({ url: session.url });
+      return NextResponse.json({ url: paymentLink.short_url });
     }
 
     // New submission
@@ -130,34 +123,26 @@ export async function POST(req: NextRequest) {
       data: { productId: product.id, amount: data.amount, status: "pending" },
     });
 
-    const session = await stripe.checkout.sessions.create({
-      mode: "payment",
-      payment_method_types: ["card"],
-      customer_email: data.ownerEmail,
-      line_items: [
-        {
-          quantity: 1,
-          price_data: {
-            currency: "usd",
-            unit_amount: data.amount,
-            product_data: {
-              name: `BuildRank submission — ${data.name}`,
-              description: `List ${data.name} on the BuildRank leaderboard.`,
-            },
-          },
-        },
-      ],
-      metadata: { bidId: bid.id, productId: product.id },
-      success_url: `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${origin}/submit`,
+    const fxRate = await getUsdToInrRate();
+    const inrPaise = usdCentsToInrPaise(data.amount, fxRate);
+
+    const paymentLink = await razorpay.paymentLink.create({
+      amount: inrPaise,
+      currency: "INR",
+      description: `List ${data.name} on the BuildRank leaderboard — $${(data.amount / 100).toFixed(2)}.`,
+      customer: { email: data.ownerEmail },
+      notify: { sms: false, email: false },
+      notes: { bidId: bid.id, productId: product.id, usdCents: data.amount, fxRate },
+      callback_url: `${origin}/checkout/success`,
+      callback_method: "get",
     });
 
     await prisma.bid.update({
       where: { id: bid.id },
-      data: { stripeSessionId: session.id },
+      data: { razorpayPaymentLinkId: paymentLink.id },
     });
 
-    return NextResponse.json({ url: session.url });
+    return NextResponse.json({ url: paymentLink.short_url });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Something went wrong.";
     return NextResponse.json({ error: message }, { status: 400 });

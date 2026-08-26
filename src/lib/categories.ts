@@ -21,7 +21,7 @@ export function categoryLabel(slug: string): string {
   return CATEGORIES.find((c) => c.slug === slug)?.label ?? slug;
 }
 
-export function formatUsd(cents: number): string {
+export function formatMoney(cents: number): string {
   return (cents / 100).toLocaleString("en-US", {
     style: "currency",
     currency: "USD",

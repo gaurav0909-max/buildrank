@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
-import { CATEGORIES, formatUsd, categoryLabel } from "@/lib/categories";
+import { CATEGORIES, formatMoney, categoryLabel } from "@/lib/categories";
 import CategoryTabs from "@/components/category-tabs";
 import LeaderboardRow from "@/components/leaderboard-row";
 
@@ -59,8 +59,8 @@ export default async function Home({
         <dl className="mt-10 grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-border bg-border sm:grid-cols-4">
           {[
             { l: "Live products", v: productCount.toLocaleString() },
-            { l: "Total paid out", v: formatUsd(totalRevenue) },
-            { l: "Price of #1", v: topPrice ? formatUsd(topPrice) : "—" },
+            { l: "Total paid out", v: formatMoney(totalRevenue) },
+            { l: "Price of #1", v: topPrice ? formatMoney(topPrice) : "—" },
             { l: "Categories", v: String(CATEGORIES.length) },
           ].map((s) => (
             <div key={s.l} className="bg-surface px-4 py-3.5">

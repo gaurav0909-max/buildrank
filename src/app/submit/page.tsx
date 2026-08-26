@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { CATEGORIES } from "@/lib/categories";
+import { CATEGORIES, type CategorySlug } from "@/lib/categories";
 
 function centsFromDollarsInput(v: string): number {
   const n = Math.round(parseFloat(v || "0") * 100);
@@ -120,7 +120,7 @@ function SubmitForm() {
             <Field label="Category">
               <select
                 value={category}
-                onChange={(e) => setCategory(e.target.value)}
+                onChange={(e) => setCategory(e.target.value as CategorySlug)}
                 className={inputClass}
               >
                 {CATEGORIES.map((c) => (
@@ -182,7 +182,8 @@ function SubmitForm() {
           {loading ? "Redirecting to checkout…" : `Pay $${amountInput || "0.00"} & go live`}
         </button>
         <p className="text-center text-xs text-foreground-faint">
-          Payment via Stripe Checkout. Rank updates the instant payment confirms.
+          Prices in USD. You&apos;ll be charged the INR equivalent via Razorpay Checkout at
+          the live exchange rate — rank updates the instant payment confirms.
         </p>
       </form>
     </div>

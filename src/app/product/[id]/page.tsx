@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { categoryLabel, formatUsd } from "@/lib/categories";
+import { categoryLabel, formatMoney } from "@/lib/categories";
 
 type Params = { params: Promise<{ id: string }> };
 
@@ -75,7 +75,7 @@ export default async function ProductPage({ params }: Params) {
         <div className="bg-surface px-4 py-3.5">
           <dt className="text-xs uppercase tracking-wide text-foreground-faint">Total paid</dt>
           <dd className="mt-1 font-mono tabular-nums text-xl font-semibold text-foreground">
-            {formatUsd(product.totalPaid)}
+            {formatMoney(product.totalPaid)}
           </dd>
         </div>
       </dl>
@@ -93,7 +93,7 @@ export default async function ProductPage({ params }: Params) {
           href={`/submit?outbid=${product.id}&min=${priceToBeat}`}
           className="rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-accent-ink transition-colors hover:bg-accent-strong"
         >
-          Outbid for {formatUsd(priceToBeat)}+
+          Outbid for {formatMoney(priceToBeat)}+
         </Link>
       </div>
     </div>

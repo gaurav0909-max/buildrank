@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
-import { CATEGORIES, categoryLabel, formatUsd } from "@/lib/categories";
+import { CATEGORIES, categoryLabel, formatMoney } from "@/lib/categories";
 
 export const metadata: Metadata = {
   title: "Stats",
@@ -48,7 +48,7 @@ export default async function StatsPage() {
 
       <dl className="mt-8 grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-border bg-border sm:grid-cols-4">
         {[
-          { l: "Total revenue", v: formatUsd(totalRevenue) },
+          { l: "Total revenue", v: formatMoney(totalRevenue) },
           { l: "Live products", v: productCount.toLocaleString() },
           { l: "Page views", v: pageViews.toLocaleString() },
           { l: "Product clicks", v: totalClicks.toLocaleString() },
@@ -78,7 +78,7 @@ export default async function StatsPage() {
                 />
               </div>
               <span className="w-20 shrink-0 text-right font-mono tabular-nums text-sm text-foreground">
-                {formatUsd(c.revenue)}
+                {formatMoney(c.revenue)}
               </span>
               <span className="w-16 shrink-0 text-right text-xs text-foreground-faint">
                 {c.count} listed
@@ -101,7 +101,7 @@ export default async function StatsPage() {
               received a bid in {categoryLabel(bid.product.category)}
             </span>
             <span className="font-mono tabular-nums font-medium text-accent">
-              {formatUsd(bid.amount)}
+              {formatMoney(bid.amount)}
             </span>
           </li>
         ))}
