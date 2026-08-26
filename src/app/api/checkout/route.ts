@@ -5,7 +5,15 @@ import { getRazorpay } from "@/lib/razorpay";
 import { getUsdToInrRate, usdCentsToInrPaise } from "@/lib/fx";
 import { CATEGORIES } from "@/lib/categories";
 
-const MIN_BID_CENTS = 500;
+const MIN_BID_DOLLARS = 1;
+
+function normalizeUrl(value: string): string | null {
+  const trimmed = value.trim();
+  if (/^https?:\/\/.+/.test(trimmed)) return trimmed;
+  const handleMatch = /^@?([A-Za-z0-9_]{1,15})$/.exec(trimmed);
+  if (handleMatch) return `https://x.com/${handleMatch[1]}`;
+  return null;
+}
 
 const newSubmissionSchema = {
   parse(body: unknown) {
@@ -13,8 +21,9 @@ const newSubmissionSchema = {
     if (typeof b.name !== "string" || b.name.trim().length < 2) {
       throw new Error("Project name is required.");
     }
-    if (typeof b.url !== "string" || !/^https?:\/\//.test(b.url)) {
-      throw new Error("A valid URL (starting with http/https) is required.");
+    const url = typeof b.url === "string" ? normalizeUrl(b.url) : null;
+    if (!url) {
+      throw new Error("Enter a valid URL (https://...) or an @handle.");
     }
     if (typeof b.tagline !== "string" || b.tagline.trim().length < 5) {
       throw new Error("Tagline must be at least 5 characters.");
@@ -26,12 +35,12 @@ const newSubmissionSchema = {
       throw new Error("A valid email is required.");
     }
     const amount = Number(b.amount);
-    if (!Number.isInteger(amount) || amount < MIN_BID_CENTS) {
-      throw new Error(`Minimum bid is $${(MIN_BID_CENTS / 100).toFixed(2)}.`);
+    if (!Number.isInteger(amount) || amount < MIN_BID_DOLLARS) {
+      throw new Error(`Minimum bid is $${MIN_BID_DOLLARS}.`);
     }
     return {
       name: b.name.trim(),
-      url: b.url as string,
+      url,
       tagline: (b.tagline as string).trim(),
       category: b.category as string,
       ownerEmail: b.ownerEmail as string,
@@ -66,11 +75,11 @@ export async function POST(req: NextRequest) {
       if (!product) {
         return NextResponse.json({ error: "Product not found." }, { status: 404 });
       }
-      const minAmount = product.totalPaid + MIN_BID_CENTS;
+      const minAmount = product.totalPaid + MIN_BID_DOLLARS;
       const amount = Number(b.amount);
       if (!Number.isInteger(amount) || amount < minAmount) {
         return NextResponse.json(
-          { error: `Bid must be at least $${(minAmount / 100).toFixed(2)}.` },
+          { error: `Bid must be at least $${minAmount}.` },
           { status: 400 }
         );
       }
@@ -82,15 +91,15 @@ export async function POST(req: NextRequest) {
       });
 
       const fxRate = await getUsdToInrRate();
-      const inrPaise = usdCentsToInrPaise(amount, fxRate);
+      const inrPaise = usdCentsToInrPaise(amount * 100, fxRate);
 
       const paymentLink = await razorpay.paymentLink.create({
         amount: inrPaise,
         currency: "INR",
-        description: `Move ${product.name} to the top of the BuildRank leaderboard — $${(amount / 100).toFixed(2)}.`,
+        description: `Move ${product.name} to the top of the BuildRank leaderboard — $${amount}.`,
         customer: { email: ownerEmail },
         notify: { sms: false, email: false },
-        notes: { bidId: bid.id, productId: product.id, usdCents: amount, fxRate },
+        notes: { bidId: bid.id, productId: product.id, usdAmount: amount, fxRate },
         callback_url: `${origin}/checkout/success`,
         callback_method: "get",
       });
@@ -124,15 +133,15 @@ export async function POST(req: NextRequest) {
     });
 
     const fxRate = await getUsdToInrRate();
-    const inrPaise = usdCentsToInrPaise(data.amount, fxRate);
+    const inrPaise = usdCentsToInrPaise(data.amount * 100, fxRate);
 
     const paymentLink = await razorpay.paymentLink.create({
       amount: inrPaise,
       currency: "INR",
-      description: `List ${data.name} on the BuildRank leaderboard — $${(data.amount / 100).toFixed(2)}.`,
+      description: `List ${data.name} on the BuildRank leaderboard — $${data.amount}.`,
       customer: { email: data.ownerEmail },
       notify: { sms: false, email: false },
-      notes: { bidId: bid.id, productId: product.id, usdCents: data.amount, fxRate },
+      notes: { bidId: bid.id, productId: product.id, usdAmount: data.amount, fxRate },
       callback_url: `${origin}/checkout/success`,
       callback_method: "get",
     });

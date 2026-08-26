@@ -31,30 +31,42 @@ export default async function Home({
   return (
     <div className="mx-auto w-full max-w-6xl px-5 sm:px-8">
       <section className="border-b border-border py-12 sm:py-16">
-        <p className="mb-3 inline-flex items-center gap-2 rounded-full border border-accent/30 bg-surface-muted px-3 py-1 text-xs font-semibold uppercase tracking-wide text-accent-strong">
-          Pay to rank · get outbid · get discovered
-        </p>
-        <h1 className="max-w-2xl font-display text-4xl font-extrabold leading-[1.05] tracking-tight text-foreground sm:text-5xl">
-          The leaderboard for what builders actually made.
+        <h1 className="text-center font-display text-4xl font-extrabold leading-[1.05] tracking-tight text-foreground sm:text-5xl">
+          Grab #1 for {topPrice ? formatMoney(topPrice + 1) : "$1"}
         </h1>
-        <p className="mt-4 max-w-xl text-base text-foreground-dim sm:text-lg">
-          Submit your SaaS, AI tool, extension, app, or repo. Pay to rank higher.
-          Get outbid and lose the spot. #1 gets seen by every builder who visits.
+        <p className="mx-auto mt-4 max-w-xl text-center text-sm text-foreground-dim sm:text-base">
+          New spots start at $1. Paying less than #1 still puts you on the
+          board at whatever place that bid can take.
         </p>
-        <div className="mt-7 flex flex-wrap items-center gap-3">
-          <Link
-            href="/submit"
-            className="rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-accent-ink shadow-sm transition-colors hover:bg-accent-strong"
+
+        <form
+          action="/submit"
+          className="mx-auto mt-7 flex max-w-xl flex-col gap-2.5 sm:flex-row"
+        >
+          <input
+            name="url"
+            required
+            placeholder="Your product URL or @handle"
+            className="flex-1 rounded-full border border-border bg-surface px-4 py-2.5 text-sm text-foreground placeholder:text-foreground-faint focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
+          />
+          <select
+            name="category"
+            className="rounded-full border border-border bg-surface px-4 py-2.5 text-sm text-foreground-dim focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
           >
-            Submit your project
-          </Link>
-          <Link
-            href="/about"
-            className="rounded-full border border-border px-5 py-2.5 text-sm font-semibold text-foreground-dim transition-colors hover:border-accent/40 hover:text-foreground"
+            <option value="">Choose a category</option>
+            {CATEGORIES.map((c) => (
+              <option key={c.slug} value={c.slug}>
+                {c.label}
+              </option>
+            ))}
+          </select>
+          <button
+            type="submit"
+            className="rounded-full bg-accent px-6 py-2.5 text-sm font-semibold text-accent-ink shadow-sm transition-colors hover:bg-accent-strong"
           >
-            How it works
-          </Link>
-        </div>
+            Grab it
+          </button>
+        </form>
 
         <dl className="mt-10 grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-border bg-border sm:grid-cols-4">
           {[

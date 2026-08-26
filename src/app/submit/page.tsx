@@ -4,8 +4,8 @@ import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { CATEGORIES, type CategorySlug } from "@/lib/categories";
 
-function centsFromDollarsInput(v: string): number {
-  const n = Math.round(parseFloat(v || "0") * 100);
+function dollarsFromInput(v: string): number {
+  const n = Math.round(parseFloat(v || "0"));
   return Number.isFinite(n) ? n : 0;
 }
 
@@ -20,34 +20,39 @@ export default function SubmitPage() {
 function SubmitForm() {
   const params = useSearchParams();
   const outbidId = params.get("outbid");
-  const minCents = Number(params.get("min") ?? 500) || 500;
+  const minAmount = Number(params.get("min") ?? 1) || 1;
+  const prefillUrl = params.get("url") ?? "";
+  const prefillCategory = params.get("category");
 
   const [name, setName] = useState("");
-  const [url, setUrl] = useState("");
+  const [url, setUrl] = useState(prefillUrl);
   const [tagline, setTagline] = useState("");
-  const [category, setCategory] = useState(CATEGORIES[0].slug);
+  const [category, setCategory] = useState<CategorySlug>(
+    (CATEGORIES.find((c) => c.slug === prefillCategory)?.slug as CategorySlug) ??
+      CATEGORIES[0].slug
+  );
   const [imageUrl, setImageUrl] = useState("");
   const [ownerEmail, setOwnerEmail] = useState("");
-  const [amountInput, setAmountInput] = useState((minCents / 100).toFixed(2));
+  const [amountInput, setAmountInput] = useState(String(minAmount));
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    setAmountInput((minCents / 100).toFixed(2));
-  }, [minCents]);
+    setAmountInput(String(minAmount));
+  }, [minAmount]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
 
-    const amount = centsFromDollarsInput(amountInput);
+    const amount = dollarsFromInput(amountInput);
 
     if (!ownerEmail) {
       setError("Enter your email so we can send a receipt and let you re-bid later.");
       return;
     }
-    if (amount < minCents) {
-      setError(`Minimum bid is $${(minCents / 100).toFixed(2)}.`);
+    if (amount < minAmount) {
+      setError(`Minimum bid is $${minAmount}.`);
       return;
     }
 
@@ -77,11 +82,11 @@ function SubmitForm() {
         {outbidId ? "Reclaim the spot" : "New submission"}
       </p>
       <h1 className="mt-2 font-display text-3xl font-extrabold tracking-tight text-foreground">
-        {outbidId ? "Outbid the current holder" : "Submit your project"}
+        {outbidId ? "Overtake the current holder" : "Grab your spot"}
       </h1>
       <p className="mt-3 text-sm text-foreground-dim">
         {outbidId
-          ? `Minimum bid to take this spot is $${(minCents / 100).toFixed(2)}. Rank is decided purely by total paid — no review, no waiting.`
+          ? `Minimum bid to take this spot is $${minAmount}. Rank is decided purely by total paid — no review, no waiting.`
           : "Pick a category, set your price, and you're live the moment payment confirms. No approval queue."}
       </p>
 
@@ -93,17 +98,16 @@ function SubmitForm() {
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="devkit-cli"
+                placeholder="my-project"
                 className={inputClass}
               />
             </Field>
-            <Field label="URL">
+            <Field label="URL or @handle">
               <input
                 required
-                type="url"
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
-                placeholder="https://github.com/you/devkit-cli"
+                placeholder="https://example.com or @handle"
                 className={inputClass}
               />
             </Field>
@@ -112,7 +116,7 @@ function SubmitForm() {
                 required
                 value={tagline}
                 onChange={(e) => setTagline(e.target.value)}
-                placeholder="One line — what does it do?"
+                placeholder="One line — what is it?"
                 maxLength={90}
                 className={inputClass}
               />
@@ -153,7 +157,7 @@ function SubmitForm() {
           />
         </Field>
 
-        <Field label={`Bid amount (min $${(minCents / 100).toFixed(2)})`}>
+        <Field label={`Bid amount (min $${minAmount})`}>
           <div className="relative">
             <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 font-mono text-foreground-faint">
               $
@@ -161,8 +165,8 @@ function SubmitForm() {
             <input
               required
               type="number"
-              min={minCents / 100}
-              step="0.01"
+              min={minAmount}
+              step="1"
               value={amountInput}
               onChange={(e) => setAmountInput(e.target.value)}
               className={`${inputClass} pl-7 font-mono tabular-nums`}
@@ -179,7 +183,7 @@ function SubmitForm() {
           disabled={loading}
           className="mt-2 rounded-full bg-accent px-5 py-3 text-sm font-semibold text-accent-ink shadow-sm transition-colors hover:bg-accent-strong disabled:opacity-60"
         >
-          {loading ? "Redirecting to checkout…" : `Pay $${amountInput || "0.00"} & go live`}
+          {loading ? "Redirecting to checkout…" : `Pay $${amountInput || minAmount} & go live`}
         </button>
         <p className="text-center text-xs text-foreground-faint">
           Prices in USD. You&apos;ll be charged the INR equivalent via Razorpay Checkout at

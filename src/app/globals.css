@@ -1,37 +1,37 @@
 @import "tailwindcss";
 
 :root {
-  /* Light theme — from the brand palette (cream / mist / azure / cobalt) */
-  --background: #f2efe7;
-  --surface: #fbfaf5;
-  --surface-muted: #c8dfdb;
-  --border: #cdd8ce;
-  --foreground: #12233a;
-  --foreground-dim: #4a6178;
-  --foreground-faint: #7c92a1;
-  --accent: #3368a0;
-  --accent-strong: #244c79;
+  /* Light theme — clean neutral base with a warm accent */
+  --background: #ffffff;
+  --surface: #ffffff;
+  --surface-muted: #f4f4f5;
+  --border: #e4e4e7;
+  --foreground: #18181b;
+  --foreground-dim: #52525b;
+  --foreground-faint: #a1a1aa;
+  --accent: #ea580c;
+  --accent-strong: #c2410c;
   --accent-ink: #ffffff;
-  --up: #2f9e68;
-  --down: #c24949;
-  --shadow-color: 210 45% 25%;
+  --up: #16a34a;
+  --down: #dc2626;
+  --shadow-color: 20 14% 10%;
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --background: #0b1520;
-    --surface: #101e2e;
-    --surface-muted: #16283a;
-    --border: #223447;
-    --foreground: #eaf1f5;
-    --foreground-dim: #9db3c4;
-    --foreground-faint: #63798c;
-    --accent: #66a3bf;
-    --accent-strong: #8fc3da;
-    --accent-ink: #06141f;
-    --up: #4fcb8b;
-    --down: #e07a72;
-    --shadow-color: 210 60% 3%;
+    --background: #0c0a09;
+    --surface: #18181b;
+    --surface-muted: #27272a;
+    --border: #3f3f46;
+    --foreground: #fafafa;
+    --foreground-dim: #d4d4d8;
+    --foreground-faint: #71717a;
+    --accent: #fb923c;
+    --accent-strong: #fdba74;
+    --accent-ink: #1c0a00;
+    --up: #4ade80;
+    --down: #f87171;
+    --shadow-color: 20 14% 3%;
   }
 }
 

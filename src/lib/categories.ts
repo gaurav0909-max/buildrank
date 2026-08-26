@@ -1,31 +1,48 @@
 export type CategorySlug =
-  | "github"
-  | "saas"
-  | "ai-tool"
-  | "extension"
-  | "mobile-app"
-  | "portfolio"
-  | "open-source";
+  | "agencies"
+  | "ai-agents"
+  | "ai-tools"
+  | "marketing"
+  | "design"
+  | "crypto"
+  | "dev-tools"
+  | "directories"
+  | "ecommerce"
+  | "education"
+  | "finance"
+  | "games"
+  | "health"
+  | "productivity"
+  | "real-estate"
+  | "social"
+  | "travel"
+  | "other";
 
 export const CATEGORIES: { slug: CategorySlug; label: string; short: string }[] = [
-  { slug: "github", label: "GitHub Project", short: "GitHub" },
-  { slug: "saas", label: "SaaS", short: "SaaS" },
-  { slug: "ai-tool", label: "AI Tool", short: "AI Tool" },
-  { slug: "extension", label: "Chrome Extension", short: "Extension" },
-  { slug: "mobile-app", label: "Mobile App", short: "Mobile" },
-  { slug: "portfolio", label: "Portfolio", short: "Portfolio" },
-  { slug: "open-source", label: "Open Source", short: "OSS" },
+  { slug: "agencies", label: "Agencies", short: "Agencies" },
+  { slug: "ai-agents", label: "AI Agents", short: "AI Agents" },
+  { slug: "ai-tools", label: "AI Tools", short: "AI Tools" },
+  { slug: "marketing", label: "Marketing & Advertising", short: "Marketing" },
+  { slug: "design", label: "Design & Creative", short: "Design" },
+  { slug: "crypto", label: "Crypto & Web3", short: "Crypto" },
+  { slug: "dev-tools", label: "Developer Tools", short: "Dev Tools" },
+  { slug: "directories", label: "Directories & Launch", short: "Directories" },
+  { slug: "ecommerce", label: "Ecommerce & Retail", short: "Ecommerce" },
+  { slug: "education", label: "Education & Learning", short: "Education" },
+  { slug: "finance", label: "Business & Finance", short: "Finance" },
+  { slug: "games", label: "Games & Entertainment", short: "Games" },
+  { slug: "health", label: "Health & Wellness", short: "Health" },
+  { slug: "productivity", label: "Productivity & Tools", short: "Productivity" },
+  { slug: "real-estate", label: "Real Estate & Property", short: "Real Estate" },
+  { slug: "social", label: "Social & Creator Tools", short: "Social" },
+  { slug: "travel", label: "Travel & Local", short: "Travel" },
+  { slug: "other", label: "Other", short: "Other" },
 ];
 
 export function categoryLabel(slug: string): string {
   return CATEGORIES.find((c) => c.slug === slug)?.label ?? slug;
 }
 
-export function formatMoney(cents: number): string {
-  return (cents / 100).toLocaleString("en-US", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: cents % 100 === 0 ? 0 : 2,
-    maximumFractionDigits: 2,
-  });
+export function formatMoney(dollars: number): string {
+  return `$${Math.round(dollars).toLocaleString("en-US")}`;
 }

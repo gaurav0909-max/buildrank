@@ -36,7 +36,7 @@ export default async function ProductPage({ params }: Params) {
 
   const globalRank = rankAbove + 1;
   const categoryRank = categoryRankAbove + 1;
-  const priceToBeat = product.totalPaid + 500;
+  const priceToBeat = product.totalPaid + 1;
 
   return (
     <div className="mx-auto w-full max-w-2xl px-5 py-14 sm:px-8 sm:py-20">
@@ -93,7 +93,7 @@ export default async function ProductPage({ params }: Params) {
           href={`/submit?outbid=${product.id}&min=${priceToBeat}`}
           className="rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-accent-ink transition-colors hover:bg-accent-strong"
         >
-          Outbid for {formatMoney(priceToBeat)}+
+          Overtake for {formatMoney(priceToBeat)}
         </Link>
       </div>
     </div>

@@ -31,15 +31,13 @@ export const metadata: Metadata = {
     template: "%s · BuildRank",
   },
   description:
-    "The public leaderboard for indie hackers and developers. Submit your SaaS, AI tool, Chrome extension, mobile app, GitHub project, portfolio, or open-source project. Pay to rank higher, get outbid, get clicks.",
+    "The public pay-to-rank leaderboard. Submit anything, pay to rank higher, get outbid and lose the spot. #1 gets seen by everyone who visits.",
   keywords: [
-    "indie hackers",
+    "leaderboard",
     "launch platform",
-    "product leaderboard",
     "pay to rank",
-    "developer directory",
-    "SaaS directory",
-    "AI tools directory",
+    "outbid",
+    "product directory",
     "startup launch",
   ],
   authors: [{ name: "BuildRank" }],
@@ -49,14 +47,14 @@ export const metadata: Metadata = {
     siteName: "BuildRank",
     title: "BuildRank — Pay to Rank. Get Discovered.",
     description:
-      "The public leaderboard for indie hackers and developers. Pay to rank, get outbid, get clicks.",
+      "The public pay-to-rank leaderboard. Pay to rank, get outbid, get clicks.",
     images: [{ url: "/og.png", width: 1200, height: 630, alt: "BuildRank" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "BuildRank — Pay to Rank. Get Discovered.",
     description:
-      "The public leaderboard for indie hackers and developers. Pay to rank, get outbid, get clicks.",
+      "The public pay-to-rank leaderboard. Pay to rank, get outbid, get clicks.",
     images: ["/og.png"],
   },
   robots: {
@@ -74,8 +72,7 @@ const jsonLd = {
   "@type": "WebSite",
   name: "BuildRank",
   url: siteUrl,
-  description:
-    "The public pay-to-rank leaderboard for indie hackers and developers.",
+  description: "The public pay-to-rank leaderboard.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

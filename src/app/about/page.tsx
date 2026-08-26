@@ -18,7 +18,7 @@ const faqs = [
   },
   {
     q: "Is there a minimum bid?",
-    a: "Yes — $5 to submit, and any outbid must beat the current holder's total by at least $5. Prices are shown in USD; you're charged the INR equivalent at checkout.",
+    a: "Yes — $1 to submit, and any overtake must beat the current holder's total by at least $1. Prices are shown in USD; you're charged the INR equivalent at checkout.",
   },
   {
     q: "Do listings expire?",
@@ -41,20 +41,9 @@ export default function AboutPage() {
         How BuildRank works
       </h1>
       <p className="mt-4 text-base leading-relaxed text-foreground-dim">
-        BuildRank is a public leaderboard for indie hackers and developers. Submit
-        a GitHub project, SaaS, AI tool, Chrome extension, mobile app, portfolio,
-        or open-source project. Pay to rank it higher. If someone pays more, they
-        take your spot. That's the entire mechanic — the same one that made{" "}
-        <a
-          href="https://outbid.lol"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-accent hover:text-accent-strong"
-        >
-          outbid.lol
-        </a>{" "}
-        go viral, pointed at builders showing off what they made instead of a
-        general ego-board.
+        BuildRank is a public pay-to-rank leaderboard. Submit anything — a
+        product, a project, a profile. Pay to rank it higher. If someone pays
+        more, they take your spot. That's the entire mechanic.
       </p>
 
       <div className="mt-10 flex flex-col gap-6">

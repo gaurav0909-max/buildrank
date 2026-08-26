@@ -13,7 +13,7 @@ export type LeaderboardProduct = {
   clicks: number;
 };
 
-const MIN_INCREMENT = 500; // $5.00 in cents
+const MIN_INCREMENT = 1; // $1 minimum increment
 
 export default function LeaderboardRow({
   product,
@@ -85,7 +85,7 @@ export default function LeaderboardRow({
             href={`/submit?outbid=${product.id}&min=${priceToBeat}`}
             className="mt-0.5 inline-block text-xs font-semibold text-accent hover:text-accent-strong"
           >
-            Outbid for {formatMoney(priceToBeat)}+
+            Overtake for {formatMoney(priceToBeat)}
           </Link>
         </div>
       </div>
