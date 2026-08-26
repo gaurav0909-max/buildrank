@@ -1,0 +1,53 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  name        String
+  url         String
+  tagline     String
+  imageUrl    String
+  ownerEmail  String
+  ownerToken  String   @unique
+  category    String
+  totalPaid   Int      @default(0)
+  clicks      Int      @default(0)
+  createdAt   DateTime @default(now())
+
+  bids   Bid[]
+  events VisitEvent[]
+
+  @@index([category])
+  @@index([totalPaid])
+}
+
+model Bid {
+  id              String   @id @default(cuid())
+  productId       String
+  amount          Int
+  stripeSessionId String?  @unique
+  status          String   @default("pending")
+  createdAt       DateTime @default(now())
+
+  product Product @relation(fields: [productId], references: [id])
+
+  @@index([productId])
+}
+
+model VisitEvent {
+  id        String   @id @default(cuid())
+  type      String
+  productId String?
+  referrer  String?
+  createdAt DateTime @default(now())
+
+  product Product? @relation(fields: [productId], references: [id])
+
+  @@index([type])
+  @@index([productId])
+}
