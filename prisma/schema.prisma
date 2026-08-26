@@ -27,12 +27,12 @@ model Product {
 }
 
 model Bid {
-  id                    String   @id @default(cuid())
-  productId             String
-  amount                Int
-  razorpayPaymentLinkId String?  @unique
-  status                String   @default("pending")
-  createdAt             DateTime @default(now())
+  id                  String   @id @default(cuid())
+  productId           String
+  amount              Int
+  dodoCheckoutSession String?  @unique
+  status              String   @default("pending")
+  createdAt           DateTime @default(now())
 
   product Product @relation(fields: [productId], references: [id])
 

@@ -186,8 +186,7 @@ function SubmitForm() {
           {loading ? "Redirecting to checkout…" : `Pay $${amountInput || minAmount} & go live`}
         </button>
         <p className="text-center text-xs text-foreground-faint">
-          Prices in USD. You&apos;ll be charged the INR equivalent via Razorpay Checkout at
-          the live exchange rate — rank updates the instant payment confirms.
+          Payment via Dodo Payments Checkout. Rank updates the instant payment confirms.
         </p>
       </form>
     </div>

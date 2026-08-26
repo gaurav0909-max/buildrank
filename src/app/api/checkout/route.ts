@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { randomUUID } from "node:crypto";
 import { prisma } from "@/lib/prisma";
-import { getRazorpay } from "@/lib/razorpay";
-import { getUsdToInrRate, usdCentsToInrPaise } from "@/lib/fx";
+import { getDodo } from "@/lib/dodo";
 import { CATEGORIES } from "@/lib/categories";
 
 const MIN_BID_DOLLARS = 1;
@@ -13,6 +12,16 @@ function normalizeUrl(value: string): string | null {
   const handleMatch = /^@?([A-Za-z0-9_]{1,15})$/.exec(trimmed);
   if (handleMatch) return `https://x.com/${handleMatch[1]}`;
   return null;
+}
+
+function getListingProductId(): string {
+  const id = process.env.DODO_LISTING_PRODUCT_ID;
+  if (!id) {
+    throw new Error(
+      "DODO_LISTING_PRODUCT_ID is not set. Create a $1 one-time product in Dodo Payments and add its id to .env."
+    );
+  }
+  return id;
 }
 
 const newSubmissionSchema = {
@@ -65,7 +74,8 @@ export async function POST(req: NextRequest) {
   const origin = req.nextUrl.origin;
 
   try {
-    const razorpay = getRazorpay();
+    const dodo = getDodo();
+    const listingProductId = getListingProductId();
 
     if (b.mode === "outbid") {
       if (typeof b.productId !== "string") {
@@ -90,26 +100,23 @@ export async function POST(req: NextRequest) {
         data: { productId: product.id, amount, status: "pending" },
       });
 
-      const fxRate = await getUsdToInrRate();
-      const inrPaise = usdCentsToInrPaise(amount * 100, fxRate);
-
-      const paymentLink = await razorpay.paymentLink.create({
-        amount: inrPaise,
-        currency: "INR",
-        description: `Move ${product.name} to the top of the BuildRank leaderboard — $${amount}.`,
+      const session = await dodo.checkoutSessions.create({
+        product_cart: [{ product_id: listingProductId, quantity: amount }],
         customer: { email: ownerEmail },
-        notify: { sms: false, email: false },
-        notes: { bidId: bid.id, productId: product.id, usdAmount: amount, fxRate },
-        callback_url: `${origin}/checkout/success`,
-        callback_method: "get",
+        metadata: { bidId: bid.id, productId: product.id },
+        return_url: `${origin}/checkout/success`,
       });
+
+      if (!session.checkout_url) {
+        return NextResponse.json({ error: "Checkout URL was not returned." }, { status: 502 });
+      }
 
       await prisma.bid.update({
         where: { id: bid.id },
-        data: { razorpayPaymentLinkId: paymentLink.id },
+        data: { dodoCheckoutSession: session.session_id },
       });
 
-      return NextResponse.json({ url: paymentLink.short_url });
+      return NextResponse.json({ url: session.checkout_url });
     }
 
     // New submission
@@ -132,26 +139,23 @@ export async function POST(req: NextRequest) {
       data: { productId: product.id, amount: data.amount, status: "pending" },
     });
 
-    const fxRate = await getUsdToInrRate();
-    const inrPaise = usdCentsToInrPaise(data.amount * 100, fxRate);
-
-    const paymentLink = await razorpay.paymentLink.create({
-      amount: inrPaise,
-      currency: "INR",
-      description: `List ${data.name} on the BuildRank leaderboard — $${data.amount}.`,
+    const session = await dodo.checkoutSessions.create({
+      product_cart: [{ product_id: listingProductId, quantity: data.amount }],
       customer: { email: data.ownerEmail },
-      notify: { sms: false, email: false },
-      notes: { bidId: bid.id, productId: product.id, usdAmount: data.amount, fxRate },
-      callback_url: `${origin}/checkout/success`,
-      callback_method: "get",
+      metadata: { bidId: bid.id, productId: product.id },
+      return_url: `${origin}/checkout/success`,
     });
+
+    if (!session.checkout_url) {
+      return NextResponse.json({ error: "Checkout URL was not returned." }, { status: 502 });
+    }
 
     await prisma.bid.update({
       where: { id: bid.id },
-      data: { razorpayPaymentLinkId: paymentLink.id },
+      data: { dodoCheckoutSession: session.session_id },
     });
 
-    return NextResponse.json({ url: paymentLink.short_url });
+    return NextResponse.json({ url: session.checkout_url });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Something went wrong.";
     return NextResponse.json({ error: message }, { status: 400 });

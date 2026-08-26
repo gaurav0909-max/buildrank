@@ -11,7 +11,7 @@ export default function CheckoutSuccessPage() {
         Payment confirmed
       </h1>
       <p className="mt-2 max-w-sm text-sm text-foreground-dim">
-        Your rank updates the moment Razorpay confirms the charge — usually within a
+        Your rank updates the moment payment confirms — usually within a
         few seconds. Refresh the leaderboard to see your new position.
       </p>
       <Link

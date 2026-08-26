@@ -18,7 +18,7 @@ const faqs = [
   },
   {
     q: "Is there a minimum bid?",
-    a: "Yes — $1 to submit, and any overtake must beat the current holder's total by at least $1. Prices are shown in USD; you're charged the INR equivalent at checkout.",
+    a: "Yes — $1 to submit, and any overtake must beat the current holder's total by at least $1.",
   },
   {
     q: "Do listings expire?",
