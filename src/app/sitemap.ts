@@ -4,7 +4,10 @@ import { prisma } from "@/lib/prisma";
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://buildrank.lol";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const products = await prisma.product.findMany({ select: { id: true, createdAt: true } });
+  const products = await prisma.product.findMany({
+    where: { totalPaid: { gt: 0 } },
+    select: { id: true, createdAt: true },
+  });
 
   return [
     { url: siteUrl, changeFrequency: "always", priority: 1 },

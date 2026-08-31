@@ -17,12 +17,15 @@ export default async function Home({
 
   const [products, agg, productCount] = await Promise.all([
     prisma.product.findMany({
-      where: activeCategory ? { category: activeCategory } : undefined,
+      where: {
+        totalPaid: { gt: 0 },
+        ...(activeCategory ? { category: activeCategory } : {}),
+      },
       orderBy: { totalPaid: "desc" },
       take: 100,
     }),
     prisma.product.aggregate({ _sum: { totalPaid: true } }),
-    prisma.product.count(),
+    prisma.product.count({ where: { totalPaid: { gt: 0 } } }),
   ]);
 
   const totalRevenue = agg._sum.totalPaid ?? 0;

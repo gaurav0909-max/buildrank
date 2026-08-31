@@ -12,7 +12,7 @@ export const revalidate = 30;
 export default async function StatsPage() {
   const [agg, productCount, pageViews, recentBids, byCategory] = await Promise.all([
     prisma.product.aggregate({ _sum: { totalPaid: true, clicks: true } }),
-    prisma.product.count(),
+    prisma.product.count({ where: { totalPaid: { gt: 0 } } }),
     prisma.visitEvent.count({ where: { type: "page_view" } }),
     prisma.bid.findMany({
       where: { status: "paid" },
@@ -23,7 +23,7 @@ export default async function StatsPage() {
     Promise.all(
       CATEGORIES.map(async (c) => {
         const a = await prisma.product.aggregate({
-          where: { category: c.slug },
+          where: { category: c.slug, totalPaid: { gt: 0 } },
           _sum: { totalPaid: true },
           _count: true,
         });

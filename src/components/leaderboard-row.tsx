@@ -1,5 +1,8 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { categoryLabel, formatMoney } from "@/lib/categories";
 
 export type LeaderboardProduct = {
@@ -24,12 +27,19 @@ export default function LeaderboardRow({
 }) {
   const priceToBeat = product.totalPaid + MIN_INCREMENT;
   const podium = rank <= 3;
+  const router = useRouter();
 
   return (
     <li className="group relative">
       <div
+        role="link"
+        tabIndex={0}
+        onClick={() => router.push(`/product/${product.id}`)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") router.push(`/product/${product.id}`);
+        }}
         className={
-          "flex items-center gap-4 rounded-xl border px-4 py-3.5 transition-colors sm:gap-5 sm:px-5 " +
+          "flex cursor-pointer items-center gap-4 rounded-xl border px-4 py-3.5 transition-colors sm:gap-5 sm:px-5 " +
           (podium
             ? "border-accent/35 bg-surface shadow-[0_1px_2px_rgba(0,0,0,0.04)]"
             : "border-border bg-surface hover:border-accent/30")
@@ -83,7 +93,8 @@ export default function LeaderboardRow({
           </div>
           <Link
             href={`/submit?outbid=${product.id}&min=${priceToBeat}`}
-            className="mt-0.5 inline-block text-xs font-semibold text-accent hover:text-accent-strong"
+            onClick={(e) => e.stopPropagation()}
+            className="relative z-10 mt-0.5 inline-block text-xs font-semibold text-accent hover:text-accent-strong"
           >
             Overtake for {formatMoney(priceToBeat)}
           </Link>
