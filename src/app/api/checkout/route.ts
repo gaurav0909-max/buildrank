@@ -8,9 +8,15 @@ const MIN_BID_DOLLARS = 1;
 
 function normalizeUrl(value: string): string | null {
   const trimmed = value.trim();
-  if (/^https?:\/\/.+/.test(trimmed)) return trimmed;
+  if (/^https?:\/\/.+/i.test(trimmed)) return trimmed;
+
   const handleMatch = /^@?([A-Za-z0-9_]{1,15})$/.exec(trimmed);
   if (handleMatch) return `https://x.com/${handleMatch[1]}`;
+
+  const bareDomainMatch =
+    /^([a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,}(?::\d+)?(?:\/\S*)?$/i.test(trimmed);
+  if (bareDomainMatch) return `https://${trimmed}`;
+
   return null;
 }
 

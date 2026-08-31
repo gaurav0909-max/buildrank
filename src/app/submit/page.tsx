@@ -107,7 +107,7 @@ function SubmitForm() {
                 required
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
-                placeholder="https://example.com or @handle"
+                placeholder="example.com or @handle"
                 className={inputClass}
               />
             </Field>
