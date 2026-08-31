@@ -4,6 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { categoryLabel, formatMoney } from "@/lib/categories";
+import VisitLink from "@/components/visit-link";
 
 type Params = { params: Promise<{ id: string }> };
 
@@ -81,14 +82,7 @@ export default async function ProductPage({ params }: Params) {
       </dl>
 
       <div className="mt-8 flex flex-wrap gap-3">
-        <a
-          href={product.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="rounded-full border border-border px-5 py-2.5 text-sm font-semibold text-foreground-dim transition-colors hover:border-accent/40 hover:text-foreground"
-        >
-          Visit {product.name} →
-        </a>
+        <VisitLink productId={product.id} url={product.url} name={product.name} />
         <Link
           href={`/submit?outbid=${product.id}&min=${priceToBeat}`}
           className="rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-accent-ink transition-colors hover:bg-accent-strong"

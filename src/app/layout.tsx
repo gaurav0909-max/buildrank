@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Sora, Manrope, JetBrains_Mono } from "next/font/google";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
+import PageViewBeacon from "@/components/page-view-beacon";
 import "./globals.css";
 
 const sora = Sora({
@@ -89,6 +90,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         />
       </head>
       <body className="min-h-full flex flex-col bg-background text-foreground">
+        <PageViewBeacon />
         <Header />
         <main className="flex-1 flex flex-col">{children}</main>
         <Footer />
