@@ -49,14 +49,12 @@ export const metadata: Metadata = {
     title: "BuildRank — Pay to Rank. Get Discovered.",
     description:
       "The public pay-to-rank leaderboard. Pay to rank, get outbid, get clicks.",
-    images: [{ url: "/og.png", width: 1200, height: 630, alt: "BuildRank" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "BuildRank — Pay to Rank. Get Discovered.",
     description:
       "The public pay-to-rank leaderboard. Pay to rank, get outbid, get clicks.",
-    images: ["/og.png"],
   },
   robots: {
     index: true,

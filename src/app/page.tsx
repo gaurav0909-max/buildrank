@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { CATEGORIES, formatMoney, categoryLabel } from "@/lib/categories";
@@ -5,6 +6,33 @@ import CategoryTabs from "@/components/category-tabs";
 import LeaderboardRow from "@/components/leaderboard-row";
 
 export const revalidate = 10;
+
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://buildrank.lol";
+
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<{ category?: string }>;
+}): Promise<Metadata> {
+  const { category } = await searchParams;
+  const isValidCategory = CATEGORIES.some((c) => c.slug === category);
+
+  if (!isValidCategory) {
+    return { alternates: { canonical: siteUrl } };
+  }
+
+  const label = categoryLabel(category!);
+  const title = `${label} Leaderboard — Pay to Rank | BuildRank`;
+  const description = `See the top-ranked ${label.toLowerCase()} projects on BuildRank, ranked purely by total amount paid. Pay $1 to list yours and get discovered.`;
+
+  return {
+    title,
+    description,
+    alternates: { canonical: `${siteUrl}/?category=${category}` },
+    openGraph: { title, description, url: `${siteUrl}/?category=${category}` },
+    twitter: { title, description },
+  };
+}
 
 export default async function Home({
   searchParams,
@@ -31,8 +59,26 @@ export default async function Home({
   const totalRevenue = agg._sum.totalPaid ?? 0;
   const topPrice = products[0]?.totalPaid ?? 0;
 
+  const itemListJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: activeCategory ? `${categoryLabel(activeCategory)} Leaderboard` : "BuildRank Leaderboard",
+    itemListElement: products.slice(0, 20).map((p, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      url: `${siteUrl}/product/${p.id}`,
+      name: p.name,
+    })),
+  };
+
   return (
     <div className="mx-auto w-full max-w-6xl px-5 sm:px-8">
+      {products.length > 0 && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
+        />
+      )}
       <section className="border-b border-border py-12 sm:py-16">
         <h1 className="text-center font-display text-4xl font-extrabold leading-[1.05] tracking-tight text-foreground sm:text-5xl">
           Grab #1 for {topPrice ? formatMoney(topPrice + 1) : "$1"}

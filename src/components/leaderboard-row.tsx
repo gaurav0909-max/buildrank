@@ -61,7 +61,7 @@ export default function LeaderboardRow({
         <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-lg border border-border bg-surface-muted sm:h-12 sm:w-12">
           <Image
             src={product.imageUrl}
-            alt=""
+            alt={`${product.name} logo`}
             fill
             sizes="48px"
             className="object-cover"
