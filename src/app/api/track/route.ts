@@ -9,11 +9,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid JSON body." }, { status: 400 });
   }
 
-  const b = body as { type?: string; productId?: string };
+  const b = body as { type?: string; productId?: string; visitorId?: string };
   const referrer = req.headers.get("referer");
+  const visitorId = typeof b.visitorId === "string" ? b.visitorId : null;
 
   if (b.type === "page_view") {
-    await prisma.visitEvent.create({ data: { type: "page_view", referrer } });
+    await prisma.visitEvent.create({ data: { type: "page_view", referrer, visitorId } });
     return NextResponse.json({ ok: true });
   }
 
@@ -28,9 +29,18 @@ export async function POST(req: NextRequest) {
         data: { clicks: { increment: 1 } },
       }),
       prisma.visitEvent.create({
-        data: { type: "product_click", productId: b.productId, referrer },
+        data: { type: "product_click", productId: b.productId, referrer, visitorId },
       }),
     ]);
+    return NextResponse.json({ ok: true });
+  }
+
+  if (b.type === "heartbeat" && visitorId) {
+    await prisma.presence.upsert({
+      where: { visitorId },
+      create: { visitorId },
+      update: { lastSeenAt: new Date() },
+    });
     return NextResponse.json({ ok: true });
   }
 

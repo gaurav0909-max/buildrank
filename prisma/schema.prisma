@@ -43,6 +43,7 @@ model VisitEvent {
   id        String   @id @default(cuid())
   type      String
   productId String?
+  visitorId String?
   referrer  String?
   createdAt DateTime @default(now())
 
@@ -50,4 +51,12 @@ model VisitEvent {
 
   @@index([type])
   @@index([productId])
+  @@index([visitorId])
+}
+
+model Presence {
+  visitorId  String   @id
+  lastSeenAt DateTime @default(now())
+
+  @@index([lastSeenAt])
 }
